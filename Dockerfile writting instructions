@@ -1,0 +1,129 @@
+“A Dockerfile defines how to build a Docker image. It typically starts with a base image,
+FROM (base image)
+sets a working directory,
+WORKDIR (set path)
+e.g. 
+WORKDIR /app 
+copies dependencies,
+COPY dependencies
+e.g.
+COPY npm
+installs them,
+RUN npm install
+copies application code,
+COPY code
+and defines the startup command using CMD. 
+CMD ["echo" , "write your message"]
+Proper ordering ensures efficient layer caching and faster builds.”
+
+
+🧠 1. What is a Dockerfile?
+
+“A Dockerfile is a set of instructions used to build a Docker image.”
+
+🔄 Flow
+Dockerfile → docker build → Image → docker run → Container
+🧠 2. Core Instructions (YOU MUST KNOW)
+🔹 FROM
+FROM ubuntu
+
+👉 Base image (starting point)
+
+🔹 WORKDIR
+WORKDIR /app
+
+👉 Sets working directory inside container
+
+🔹 COPY
+COPY . .
+
+👉 Copies files into container
+
+🔹 RUN
+RUN apt update && apt install -y curl
+
+👉 Runs commands during build time
+
+🔹 CMD
+CMD ["node", "app.js"]
+
+👉 Runs command when container starts
+
+🧠 3. RUN vs CMD (CRITICAL)
+RUN	CMD
+Build time	Runtime
+Install/setup	Start app
+Runs once	Runs every container start
+🧠 4. Execution Types
+🔹 Exec form (preferred)
+CMD ["node", "app.js"]
+🔹 Shell form
+CMD sh -c "echo hello && sleep 5"
+
+👉 Needed for multiple commands
+
+🧠 5. Layer & Caching (VERY IMPORTANT)
+❌ Bad
+COPY . .
+RUN npm install
+
+👉 Any change → reinstall ❌
+
+✅ Good
+COPY package.json .
+RUN npm install
+COPY . .
+
+👉 Faster builds ✔️
+
+🧠 6. Container Lifecycle
+
+👉 Container runs while:
+
+main process is running
+❌ Example
+CMD ["echo", "hello"]
+
+👉 Exits immediately
+
+✅ Example
+CMD ["sleep", "1000"]
+
+👉 Stays alive
+
+🧠 7. Multiple Commands
+❌ Wrong
+CMD ["echo", "hi", "sleep", "5"]
+✅ Correct
+CMD sh -c "echo hi && sleep 5"
+🧠 8. Best Practices (INTERVIEW GOLD)
+🔥 Combine RUN commands
+RUN apt update && apt install -y curl
+🔥 Use WORKDIR
+
+👉 Avoid messy root (/)
+
+🔥 Use correct CMD
+
+👉 Always run main app
+
+🔥 Use caching properly
+
+👉 Copy dependencies first
+
+🧠 9. Common Issues + Fix
+🔴 Container exits
+
+👉 Missing CMD / no process
+
+🔴 Command not found
+
+👉 Dependency not installed
+
+🔴 Build slow
+
+👉 Bad caching order
+
+🔴 App not accessible
+
+👉 Port / binding issue
